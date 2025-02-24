@@ -6,8 +6,4 @@ public class MyUnauthorizedException extends MyException {
     public MyUnauthorizedException(String message, String reason) {
         super(message, HttpStatus.UNAUTHORIZED, reason);
     }
-
-    public MyUnauthorizedException(String message) {
-        this(message, null);
-    }
 }

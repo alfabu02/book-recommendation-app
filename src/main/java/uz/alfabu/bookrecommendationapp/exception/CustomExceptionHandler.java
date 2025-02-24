@@ -36,6 +36,7 @@ public class CustomExceptionHandler {
                 .stream()
                 .map(fe -> {
                     ErrorDto errorDto = new ErrorDto();
+                    errorDto.setReason(fe.getField());
                     errorDto.setMessage(fe.getDefaultMessage());
                     errorDto.setCode(400);
                     return errorDto;

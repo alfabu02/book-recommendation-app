@@ -5,13 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 import uz.alfabu.bookrecommendationapp.entity.abstractentity.AbsDateTimeEntity;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @Getter
 @Setter
 @Entity
-public class Role extends AbsDateTimeEntity {
+public class Role extends AbsDateTimeEntity implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Column(nullable = false, unique = true)
     private String name;
 

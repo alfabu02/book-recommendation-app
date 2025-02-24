@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uz.alfabu.bookrecommendationapp.entity.VerificationCode;
 import uz.alfabu.bookrecommendationapp.repository.VerificationCodeRepository;
-import uz.alfabu.bookrecommendationapp.service.contract.MailSendService;
 import uz.alfabu.bookrecommendationapp.service.contract.VerificationCodeService;
 
 import java.time.LocalDateTime;
@@ -16,7 +15,6 @@ import java.util.Random;
 public class VerificationCodeServiceImpl implements VerificationCodeService {
     private static final Random RANDOM = new Random();
     private final VerificationCodeRepository verificationCodeRepository;
-    private final MailSendService mailSendService;
 
     private String generateVerificationCode() {
         char[] code = new char[4];

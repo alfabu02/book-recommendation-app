@@ -19,7 +19,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Component
 public class JwtFilter extends OncePerRequestFilter {
-    private final static String BEARER_PREFIX = "Bearer ";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtProvider jwtProvider;
     private final UserDetailsService userDetailsService;
@@ -27,17 +27,15 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
-        if (authorization != null) {
-            if (authorization.startsWith(BEARER_PREFIX)) {
-                String token = authorization.substring(BEARER_PREFIX.length());
-                String subject = jwtProvider.getSubjectFromAccessToken(token);
+        if (authorization != null && authorization.startsWith(BEARER_PREFIX)) {
+            String token = authorization.substring(BEARER_PREFIX.length());
+            String subject = jwtProvider.getSubjectFromAccessToken(token);
 
-                if (subject != null) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
-                    var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-                }
+            if (subject != null) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(subject);
+                var authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                authentication.setDetails(new WebAuthenticationDetails(request));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
 
             // if you want, write here basic authorization logic

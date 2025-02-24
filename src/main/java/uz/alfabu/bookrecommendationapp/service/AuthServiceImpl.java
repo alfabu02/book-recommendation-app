@@ -12,7 +12,6 @@ import uz.alfabu.bookrecommendationapp.entity.User;
 import uz.alfabu.bookrecommendationapp.entity.VerificationCode;
 import uz.alfabu.bookrecommendationapp.exception.MyBadRequestException;
 import uz.alfabu.bookrecommendationapp.exception.MyConflictException;
-import uz.alfabu.bookrecommendationapp.exception.MyNotFoundException;
 import uz.alfabu.bookrecommendationapp.exception.MyUnauthorizedException;
 import uz.alfabu.bookrecommendationapp.mapper.UserMapper;
 import uz.alfabu.bookrecommendationapp.payload.*;
@@ -33,6 +32,8 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+    private static final String EMAIL_WORD = "email";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
@@ -55,7 +56,7 @@ public class AuthServiceImpl implements AuthService {
         if (optionalUser.isPresent()) {
             // not confirmed user
             user = optionalUser.get();
-            ThrowUtil.throwIf(user.isEnabled(), new MyConflictException("User is already registered with this email!", "email"));
+            ThrowUtil.throwIf(user.isEnabled(), new MyConflictException("User is already registered with this email!", EMAIL_WORD));
 
             user.setName(signupDto.getName());
             user.setPassword(encodedPassword);
@@ -93,9 +94,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ApiResponse<UserDto> verifyAccount(VerifyAccountDto verifyAccountDto) {
         User user = (User) userDetailsService.loadUserByUsername(verifyAccountDto.getEmail());
-        ThrowUtil.throwIf(user.isEnabled(), new MyConflictException("User is already registered with this email!", "email"));
+        ThrowUtil.throwIf(user.isEnabled(), new MyConflictException("User is already registered with this email!", EMAIL_WORD));
 
-        VerificationCode verificationCode = verificationCodeRepository.findByEmail(user.getEmail()).orElseThrow(() -> new MyBadRequestException("Register first", "email"));
+        VerificationCode verificationCode = verificationCodeRepository.findByEmail(user.getEmail()).orElseThrow(() -> new MyBadRequestException("Register first", EMAIL_WORD));
 
         if (verificationCode.isExpired()) {
             verificationCodeRepository.delete(verificationCode);
@@ -116,7 +117,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ApiResponse<String> resendVerificationCode(String email) {
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        ThrowUtil.throwIf(userDetails.isEnabled(), new MyBadRequestException("Not found!", "email"));
+        ThrowUtil.throwIf(userDetails.isEnabled(), new MyBadRequestException("Not found!", EMAIL_WORD));
 
         Optional<VerificationCode> optionalVerificationCode = verificationCodeRepository.findByEmail(email);
 
